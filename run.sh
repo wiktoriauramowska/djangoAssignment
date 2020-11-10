@@ -1,3 +1,5 @@
+#!/bin/bash
+
 docker network create geodjango_network
 
 #django
