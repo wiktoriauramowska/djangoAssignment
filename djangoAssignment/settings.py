@@ -139,26 +139,24 @@ STATICFILES_DIRS = [
 if socket.gethostname() == "DESKTOP-UD7QDAK":
     DATABASES["default"]["HOST"] = "localhost"
     DATABASES["default"]["PORT"] = 25432
+    DEBUG = True
+    TEMPLATES[0]["OPTIONS"]["debug"] = True
+    ALLOWED_HOSTS = ['*', ]
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+
 else:
     DATABASES["default"]["HOST"] = 'postgis'
     DATABASES["default"]["PORT"] = 5432
+    DEBUG = False
+    TEMPLATES[0]["OPTIONS"]["debug"] = False
+    # ALLOWED_HOSTS = ['.your-domain-name.xyz', 'localhost',]
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
 
 
-# # Set DEPLOY_SECURE to True only for LIVE deployment
-# if docker_config.DEPLOY_SECURE:
-#     DEBUG = False
-#     TEMPLATES[0]["OPTIONS"]["debug"] = False
-#     # ALLOWED_HOSTS = ['.your-domain-name.xyz', 'localhost',]
-#     CSRF_COOKIE_SECURE = True
-#     SESSION_COOKIE_SECURE = True
-# else:
-#     DEBUG = True
-#     TEMPLATES[0]["OPTIONS"]["debug"] = True
-#     ALLOWED_HOSTS = ['*', ]
-#     CSRF_COOKIE_SECURE = False
-#     SESSION_COOKIE_SECURE = False
-# LOGIN_REDIRECT_URL = 'home'
-# LOGOUT_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 CRISPY_FAIL_SILENTLY = not DEBUG
