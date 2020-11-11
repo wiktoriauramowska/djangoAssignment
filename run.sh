@@ -1,4 +1,19 @@
+# !/bin/bash
+
 docker network create geodjango_network
+
+# nginx
+docker stop django_nginx
+docker rm django_nginx
+docker rmi nginx_image
+docker build -t nginx_image .
+docker create --name django_nginx --network geodjango_network --network-alias nginx_net \
+-p 80:80 -p 443:443 -t \
+-v wmap_web_data:/usr/share/nginx/html \
+-v /var/www/certbot \
+-v html_data:/usr/share/nginx/html/static \
+nginx_image
+docker start django_nginx
 
 #django
 docker stop django_app
