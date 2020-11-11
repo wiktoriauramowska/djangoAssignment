@@ -4,7 +4,7 @@
 FROM nginx
 
 RUN mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.old
-COPY .cache/temp_nginx_config.conf /etc/nginx/conf.d
-COPY /static/ /usr/share/nginx/html/static
+COPY headers.conf /etc/nginx/conf.d
+COPY server.conf /etc/nginx/conf.d
 
-EXPOSE 8001
+EXPOSE 8080

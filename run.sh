@@ -6,10 +6,11 @@ docker network create geodjango_network
 docker stop django_nginx
 docker rm django_nginx
 docker rmi nginx_image
-docker build -t nginx_image .
+docker build -t nginx_image ./nginx
 docker create --name django_nginx --network geodjango_network --network-alias nginx_net \
 -p 80:80 -p 443:443 -t \
 -v wmap_web_data:/usr/share/nginx/html \
+-v /etc/letsencrypt:/etc/letsencrypt \
 -v /var/www/certbot \
 -v html_data:/usr/share/nginx/html/static \
 nginx_image
