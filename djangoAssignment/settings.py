@@ -148,9 +148,9 @@ if socket.gethostname() == "DESKTOP-UD7QDAK":
 else:
     DATABASES["default"]["HOST"] = 'postgis'
     DATABASES["default"]["PORT"] = 5432
-    DEBUG = False
-    TEMPLATES[0]["OPTIONS"]["debug"] = False
-    # ALLOWED_HOSTS = ['.your-domain-name.xyz', 'localhost',]
+    # DEBUG = False
+    # TEMPLATES[0]["OPTIONS"]["debug"] = False
+    ALLOWED_HOSTS = ['.u-wiktoria.xyz', 'localhost']
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
 
