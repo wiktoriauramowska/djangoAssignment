@@ -63,7 +63,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'templates'
+            # BASE_DIR / 'templates'
+            str(BASE_DIR.joinpath('templates'))
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -169,4 +170,5 @@ LEAFLET_CONFIG = {
     'RESET_VIEW': False,
     'SCALE': None,
     'OPACITY': 0.5,
+    'FORCE_IMAGE_PATH': True,
 }
