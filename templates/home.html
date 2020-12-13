@@ -8,114 +8,91 @@
     {% if user.is_authenticated %}
         Hi {{ user.username }}!
         <a class="nav-link" href="{% url 'logout'%}?next={{request.path}}">Log out</a>
+            {% load leaflet_tags %}
+{% leaflet_js %}
+{% leaflet_css %}
 
-    {% else %}
-        Welcome to the world of Web Mapping!
-            <a class="nav-link" href="{% url 'login'%}?next={{request.path}}">Log in</a>
-            <a class="nav-link" href="{% url 'signup'%}?next={{request.path}}">Sign up</a>
-    {% endif %}
-    {% load leaflet_tags %}
-        {% leaflet_js %}
-        {% leaflet_css %}
-        <style>
+<body>
+    <style>
         #map,
         #webMapping {
             height: 80vh;
             width: 100%;
         }
-        </style>
+    </style>
 
-        <div id="map">
-            {% leaflet_map "webMapping" callback="web_map_init" %}
-        </div>
 
-        <script>
-            function web_map_init(map, options) {
-                var locationMarker = null;
-                var locationCircle = null;
+    <div id="map">
+        {% leaflet_map "webMapping" callback="web_map_init" %}
+    </div>
 
-                map.setView([53.5, -8.5], 11)
+    <script>
+        function web_map_init(map, options) {
+            var locationMarker = null;
+            var locationCircle = null;
 
+            map.setView([53.5, -8.5], 11)
+
+            updateLocation(map)
+
+            map.on('touchstart click dblclick', () => {
                 updateLocation(map)
+            })
 
-                map.on('touchstart click dblclick', () => {
-                    updateLocation(map)
-                })
+            function updateLocation(map) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        var lat = pos.coords.latitude;
+                        var lng = pos.coords.longitude;
+                        var acc = pos.coords.accuracy;
 
-                function updateLocation(map) {
-                    navigator.geolocation.getCurrentPosition(
-                        (pos) => {
-                            var lat = pos.coords.latitude;
-                            var lng = pos.coords.longitude;
-                            var acc = pos.coords.accuracy;
-
-                            setMapToCurrentLocation(map, lat, lng, acc);
-                            {#update_db(lat, lng)#}
-                        },
-                        (err) => {
-                            console.log('location error', err.message);
-                        },
-                        {
-                            enableHighAccuracy: true,
-                            // maximumAge: 60000,
-                            timeout: 30000
-                        }
-                    );
-                }
-
-                function setMapToCurrentLocation(myMap, lat, lng, acc) {
-                    var myLatLng = L.latLng(lat, lng);
-
-
-                    if (locationMarker || locationCircle) {
-                        map.removeLayer(locationMarker);
-                        map.removeLayer(locationCircle);
-                        map.flyTo(myLatLng, 16);
+                        setMapToCurrentLocation(map, lat, lng, acc);
+                        update_db(lat, lng)
+                    },
+                    (err) => {
+                        console.log('location error', err.message);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        // maximumAge: 60000,
+                        timeout: 30000
                     }
-                    // add marker here
-                    locationMarker = L.marker(myLatLng)
-                    locationCircle = L.circle(myLatLng, {
-                        color: "red",
-                        fillColor: "#f03",
-                        fillOpacity: 0.5,
-                        radius: acc
-                    });
+                );
+            }
 
-                    locationMarker.addTo(map)
-                    locationCircle.addTo(map)
-                }{% blocktrans %}
-
-                navigator.geolocation.watchPosition((map) => updateLocation(map), (err) => console.log('watch pos error', err));{% endblocktrans %}
-
-                {#function update_db(lat, lng) {#}
-                {##}
-                {#    username = `{{ user.get_username }}`;#}
-                {##}
-                {#    // fixes if user db updates and logs out then django view tries to fetch username which#}
-                {#    // doesnt exist and adds AnonymousUser to db#}
-                {#    if (username.length > 0) {#}
-                {#        data = {#}
-                {#            username: username,#}
-                {#            latitude: lat,#}
-                {#            longtitude: lng#}
-                {#        }#}
-                {##}
-                        {#$.ajax('world/data/', {#}
-                        {#    type: 'POST',#}
-                        {#    headers: { "X-CSRFToken": '{{csrf_token}}' },#}
-                        {#    dataType: 'json',#}
-                        {#    data: { data: JSON.stringify(data) },#}
-                        {#    timeout: 500,#}
-                        {#    success: (data, status, xhr) => {#}
-                        {#        //#}
-                        {#    },#}
-                        {#    error: (jqXhr, textStatus, errorMessage) => {#}
-                        {#        console.log('Error', errorMessage)#}
-                        {#    }#}
-                {#        })#}
+            function setMapToCurrentLocation(myMap, lat, lng, acc) {
+                var myLatLng = L.latLng(lat, lng);
 
 
+                if (locationMarker || locationCircle) {
+                    map.removeLayer(locationMarker);
+                    map.removeLayer(locationCircle);
+                    map.flyTo(myLatLng, 16);
+                }
+                // add marker here
+                locationMarker = L.marker(myLatLng)
+                locationCircle = L.circle(myLatLng, {
+                    color: "red",
+                    fillColor: "#f03",
+                    fillOpacity: 0.5,
+                    radius: acc
+                });
 
-        </script>
+                locationMarker.addTo(map)
+                locationCircle.addTo(map)
+            }
+
+            navigator.geolocation.watchPosition((map) => updateLocation(map), (err) => console.log('watch pos error', err));
+
+        }
+
+    </script>
+
+</body>
+    {% else %}
+        Welcome to the world of Web Mapping!
+            <a class="nav-link" href="{% url 'login'%}?next={{request.path}}">Log in</a>
+            <a class="nav-link" href="{% url 'signup'%}?next={{request.path}}">Sign up</a>
+    {% endif %}
 {% endblock %}
 

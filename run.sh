@@ -1,6 +1,6 @@
 # !/bin/bash
 
-docker network create geodjango_network
+#docker network create geodjango_network
 
 # nginx
 #docker stop django_nginx
@@ -26,24 +26,24 @@ docker create --name django_app --network geodjango_network --network-alias djan
 
 docker start django_app
 
-docker exec -it django_project python manage.py makemigrations
-docker exec -it django_project python manage.py migrate
+docker exec -it django_app python manage.py makemigrations
+docker exec -it django_app python manage.py migrate
 
-# # pgadmin
-docker stop pgadmin4
-docker rm pgadmin4
-docker create --name pgadmin4 --network geodjango_network --network-alias pgadmin_net -t \
--v v_pgadmin:/var/lib/pgadmin \
--p 8082:80 \
--e 'PGADMIN_DEFAULT_EMAIL=wiktoria.uramowska@mytudublin.ie' \
--e 'PGADMIN_DEFAULT_PASSWORD=mypassword' dpage/pgadmin4
+## # pgadmin
+#docker stop pgadmin4
+#docker rm pgadmin4
+#docker create --name pgadmin4 --network geodjango_network --network-alias pgadmin_net -t \
+#-v v_pgadmin:/var/lib/pgadmin \
+#-p 8082:80 \
+#-e 'PGADMIN_DEFAULT_EMAIL=wiktoria.uramowska@mytudublin.ie' \
+#-e 'PGADMIN_DEFAULT_PASSWORD=mypassword' dpage/pgadmin4
 
-docker start pgadmin4
+#docker start pgadmin4
 
 # #postgis
-docker stop postgis
-docker rm postgis
-docker create --name postgis --network geodjango_network \
---network-alias postgis_net -t -p 25432:5432 \
--v assignment:/var/lib/postgresql kartoza/postgis
-docker start postgis
+#docker stop postgis
+#docker rm postgis
+#docker create --name postgis --network geodjango_network \
+#--network-alias postgis_net -t -p 25432:5432 \
+#-v assignment:/var/lib/postgresql kartoza/postgis
+#docker start postgis
