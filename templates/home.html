@@ -9,105 +9,105 @@
         Hi {{ user.username }}!
         <a class="nav-link" href="{% url 'logout'%}?next={{request.path}}">Log out</a>
             {% load leaflet_tags %}
-{% leaflet_js %}
-{% leaflet_css %}
+        {% leaflet_js %}
+        {% leaflet_css %}
 
-<body>
-    <style>
-        #map,
-        #webMapping {
-            height: 80vh;
-            width: 100%;
-        }
-    </style>
-
-
-    <div id="map">
-        {% leaflet_map "webMapping" callback="web_map_init" %}
-    </div>
-
-    <script>
-        function web_map_init(map, options) {
-            var locationMarker = null;
-            var locationCircle = null;
-
-            map.setView([53.5, -8.5], 11)
-
-            updateLocation(map)
-
-            loadGeoJSON(map)
-
-            map.on('touchstart click dblclick', () => {
-                updateLocation(map)
-            })
-
-            function updateLocation(map) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                        var lat = pos.coords.latitude;
-                        var lng = pos.coords.longitude;
-                        var acc = pos.coords.accuracy;
-
-                        setMapToCurrentLocation(map, lat, lng, acc);
-                        update_db(lat, lng)
-                    },
-                    (err) => {
-                        console.log('location error', err.message);
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        // maximumAge: 60000,
-                        timeout: 30000
-                    }
-                );
-            }
-
-            function setMapToCurrentLocation(myMap, lat, lng, acc) {
-                var myLatLng = L.latLng(lat, lng);
-
-
-                if (locationMarker || locationCircle) {
-                    map.removeLayer(locationMarker);
-                    map.removeLayer(locationCircle);
-                    map.flyTo(myLatLng, 16);
+        <body>
+            <style>
+                #map,
+                #webMapping {
+                    height: 80vh;
+                    width: 100%;
                 }
-                // add marker here
-                locationMarker = L.marker(myLatLng)
-                locationCircle = L.circle(myLatLng, {
-                    color: "red",
-                    fillColor: "#f66",
-                    fillOpacity: 0.5,
-                    radius: acc
-                });
+            </style>
 
-                locationMarker.addTo(map)
-                locationCircle.addTo(map)
-            }
 
-            function loadGeoJSON(map) {
-                $.getJSON("static/dccrdpandd.geojson", function (data){
-                    var euroIcon = L.icon({
-                        iconUrl: "static/euro.png",
-                        iconSize: [50, 40]
-                    });
-                    //add the GeoJSON layer to the map
-                    L.geoJSON(data, {
-                        pointToLayer: function (feature, latlng){
-                            var marker = L.marker(latlng, {icon:euroIcon});
-                            marker.bindPopup('Location: ' + feature.properties.Location + '<br/>' + 'Hours of Operation: ' + feature.properties.Hours_of_Operation );
-                            return marker;
+            <div id="map">
+                {% leaflet_map "webMapping" callback="web_map_init" %}
+            </div>
+
+            <script>
+                function web_map_init(map, options) {
+                    var locationMarker = null;
+                    var locationCircle = null;
+
+                    map.setView([53.5, -8.5], 11)
+
+                    updateLocation(map)
+
+                    loadGeoJSON(map)
+
+                    map.on('touchstart click dblclick', () => {
+                        updateLocation(map)
+                    })
+
+                    function updateLocation(map) {
+                        navigator.geolocation.getCurrentPosition(
+                            (pos) => {
+                                var lat = pos.coords.latitude;
+                                var lng = pos.coords.longitude;
+                                var acc = pos.coords.accuracy;
+
+                                setMapToCurrentLocation(map, lat, lng, acc);
+                                update_db(lat, lng)
+                            },
+                            (err) => {
+                                console.log('location error', err.message);
+                            },
+                            {
+                                enableHighAccuracy: true,
+                                // maximumAge: 60000,
+                                timeout: 30000
+                            }
+                        );
+                    }
+
+                    function setMapToCurrentLocation(myMap, lat, lng, acc) {
+                        var myLatLng = L.latLng(lat, lng);
+
+
+                        if (locationMarker || locationCircle) {
+                            map.removeLayer(locationMarker);
+                            map.removeLayer(locationCircle);
+                            map.flyTo(myLatLng, 16);
                         }
-                    }).addTo(map);
-                });
-            }
+                        // add marker here
+                        locationMarker = L.marker(myLatLng)
+                        locationCircle = L.circle(myLatLng, {
+                            color: "red",
+                            fillColor: "#f66",
+                            fillOpacity: 0.5,
+                            radius: acc
+                        });
 
-            navigator.geolocation.watchPosition((map) => updateLocation(map), (err) => console.log('watch pos error', err));
+                        locationMarker.addTo(map)
+                        locationCircle.addTo(map)
+                    }
 
-        }
+                    function loadGeoJSON(map) {
+                        $.getJSON("static/dccrdpandd.geojson", function (data){
+                            var euroIcon = L.icon({
+                                iconUrl: "static/euro.png",
+                                iconSize: [50, 40]
+                            });
+                            //add the GeoJSON layer to the map
+                            L.geoJSON(data, {
+                                pointToLayer: function (feature, latlng){
+                                    var marker = L.marker(latlng, {icon:euroIcon});
+                                    marker.bindPopup('Location: ' + feature.properties.Location + '<br/>' + 'Hours of Operation: ' + feature.properties.Hours_of_Operation );
+                                    return marker;
+                                }
+                            }).addTo(map);
+                        });
+                    }
 
-    </script>
+                    navigator.geolocation.watchPosition((map) => updateLocation(map), (err) => console.log('watch pos error', err));
 
-</body>
+                }
+
+            </script>
+
+        </body>
     {% else %}
         Welcome to the world of Web Mapping!
             <a class="nav-link" href="{% url 'login'%}?next={{request.path}}">Log in</a>
