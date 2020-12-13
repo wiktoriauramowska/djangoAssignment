@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls import url
 from django.contrib.gis import admin
 from django.urls import include, path
 from django.views.generic.base import TemplateView
@@ -22,4 +23,5 @@ urlpatterns = [
     path('accounts/', include('djangoAssignment.accounts.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    url('', include('pwa.urls')),  # You MUST use an empty string as the URL prefix
 ]
