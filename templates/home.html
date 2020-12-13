@@ -86,8 +86,16 @@
 
             function loadGeoJSON(map) {
                 $.getJSON("static/dccrdpandd.geojson", function (data){
+                    var euroIcon = L.icon({
+                        iconUrl: "static/euro.png",
+                        iconSize: [50, 40]
+                    });
                     //add the GeoJSON layer to the map
-                    L.geoJSON(data).addTo(map);
+                    L.geoJSON(data, {
+                        pointToLayer: function (feature, latlng){
+                            return L.marker(latlng, {icon: euroIcon});
+                        }
+                    }).addTo(map);
                 });
             }
 
