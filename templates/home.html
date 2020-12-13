@@ -35,6 +35,8 @@
 
             updateLocation(map)
 
+            loadGeoJSON(map)
+
             map.on('touchstart click dblclick', () => {
                 updateLocation(map)
             })
@@ -80,6 +82,13 @@
 
                 locationMarker.addTo(map)
                 locationCircle.addTo(map)
+            }
+
+            function loadGeoJSON(map) {
+                $.getJSON("static/dccrdpandd.geojson", function (data){
+                    //add the GeoJSON layer to the map
+                    L.geoJSON(data).addTo(map);
+                });
             }
 
             navigator.geolocation.watchPosition((map) => updateLocation(map), (err) => console.log('watch pos error', err));
