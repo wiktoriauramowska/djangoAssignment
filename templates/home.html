@@ -93,11 +93,9 @@
                     //add the GeoJSON layer to the map
                     L.geoJSON(data, {
                         pointToLayer: function (feature, latlng){
-                            return L.marker(latlng, {
-                                icon: euroIcon
-                            }).on('mouseover', function (){
-                                this.bindPopup('Pay here!').openPopup();
-                            });
+                            var marker = L.marker(latlng, {icon:euroIcon});
+                            marker.bindPopup(feature.properties.Location + '<br/>' + feature.properties.OPEN_DT);
+                            return marker;
                         }
                     }).addTo(map);
                 });
