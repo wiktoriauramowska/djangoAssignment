@@ -1,11 +1,36 @@
 <!-- templates/home.html-->
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        ul {
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+        }
+
+        li {
+          float: left;
+        }
+
+        li a {
+          display: block;
+          padding: 8px;
+          background-color: cadetblue;
+        }
+    </style>
+</head>
+
+
+
 {% extends 'base.html' %}
 {% load i18n %}
 
 {% block title %}Home{% endblock %}
 {% block content %}
     {% if user.is_authenticated %}
-        Hi {{ user.username }}!
+        Hi {{ user.username }}! <br>
         Welcome to the Dublin Parking Meter locator.
         <a class="nav-link" href="{% url 'logout'%}?next={{request.path}}">Log out</a>
             {% load leaflet_tags %}
@@ -20,6 +45,14 @@
                     width: 100%;
                 }
             </style>
+
+            <ul>
+              <li><a href="#home">Home</a></li>
+              <li><a href="#news">News</a></li>
+              <li><a href="#contact">Contact</a></li>
+              <li><a href="#about">About</a></li>
+            </ul>
+
 
 
             <div id="map">
@@ -114,4 +147,6 @@
         <a class="nav-link" href="{% url 'signup'%}?next={{request.path}}">Sign up</a>
     {% endif %}
 {% endblock %}
+
+</html>
 
