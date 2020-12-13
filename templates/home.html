@@ -96,7 +96,7 @@
                             return L.marker(latlng, {
                                 icon: euroIcon
                             }).on('mouseover', function (){
-                                this.bindPopup(feature.properties.Name).openPopup();
+                                this.bindPopup('Pay here!').openPopup();
                             });
                         }
                     }).addTo(map);
