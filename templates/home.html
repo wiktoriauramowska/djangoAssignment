@@ -1,149 +1,107 @@
 <!-- templates/home.html-->
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        ul {
-          list-style-type: none;
-          margin: 0;
-          padding: 0;
-          overflow: hidden;
-          width: 100%;
-          background-color: cadetblue;
-        }
-
-        li {
-          float: left;
-        }
-
-        li a {
-          display: block;
-          padding: 8px;
-          color: lightsteelblue;
-        }
-    </style>
-</head>
-
-<ul>
-    <li><a href="#home">Home</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#about">About</a></li>
-</ul>
-
-
 {% extends 'base.html' %}
 {% load i18n %}
 
 {% block title %}Home{% endblock %}
+
 {% block content %}
     {% if user.is_authenticated %}
-        Hi {{ user.username }}! <br>
-        Welcome to the Dublin Parking Meter locator.
+        Hi {{ user.username }}!
         <a class="nav-link" href="{% url 'logout'%}?next={{request.path}}">Log out</a>
             {% load leaflet_tags %}
-        {% leaflet_js %}
-        {% leaflet_css %}
+{% leaflet_js %}
+{% leaflet_css %}
 
-        <body>
-            <style>
-                #map,
-                #webMapping {
-                    height: 80vh;
-                    width: 100%;
+<body>
+    <style>
+        #map,
+        #webMapping {
+            height: 80vh;
+            width: 100%;
+        }
+    </style>
+
+
+    <div id="map">
+        {% leaflet_map "webMapping" callback="web_map_init" %}
+    </div>
+
+    <script>
+        function web_map_init(map, options) {
+            var locationMarker = null;
+            var locationCircle = null;
+
+            map.setView([53.5, -8.5], 11)
+
+            updateLocation(map)
+
+            loadGeoJSON(map)
+
+            map.on('touchstart click dblclick', () => {
+                updateLocation(map)
+            })
+
+            function updateLocation(map) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        var lat = pos.coords.latitude;
+                        var lng = pos.coords.longitude;
+                        var acc = pos.coords.accuracy;
+
+                        setMapToCurrentLocation(map, lat, lng, acc);
+                        update_db(lat, lng)
+                    },
+                    (err) => {
+                        console.log('location error', err.message);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        // maximumAge: 60000,
+                        timeout: 30000
+                    }
+                );
+            }
+
+            function setMapToCurrentLocation(myMap, lat, lng, acc) {
+                var myLatLng = L.latLng(lat, lng);
+
+
+                if (locationMarker || locationCircle) {
+                    map.removeLayer(locationMarker);
+                    map.removeLayer(locationCircle);
+                    map.flyTo(myLatLng, 16);
                 }
-            </style>
+                // add marker here
+                locationMarker = L.marker(myLatLng)
+                locationCircle = L.circle(myLatLng, {
+                    color: "red",
+                    fillColor: "#f03",
+                    fillOpacity: 0.5,
+                    radius: acc
+                });
 
-            <div id="map">
-                {% leaflet_map "webMapping" callback="web_map_init" %}
-            </div>
+                locationMarker.addTo(map)
+                locationCircle.addTo(map)
+            }
 
-            <script>
-                function web_map_init(map, options) {
-                    var locationMarker = null;
-                    var locationCircle = null;
+            function loadGeoJSON(map) {
+                $.getJSON("static/dccrdpandd.geojson", function (data){
+                    //add the GeoJSON layer to the map
+                    L.geoJSON(data).addTo(map);
+                });
+            }
 
-                    map.setView([53.5, -8.5], 11)
+            navigator.geolocation.watchPosition((map) => updateLocation(map), (err) => console.log('watch pos error', err));
 
-                    updateLocation(map)
+        }
 
-                    loadGeoJSON(map)
+    </script>
 
-                    map.on('touchstart click dblclick', () => {
-                        updateLocation(map)
-                    })
-
-                    function updateLocation(map) {
-                        navigator.geolocation.getCurrentPosition(
-                            (pos) => {
-                                var lat = pos.coords.latitude;
-                                var lng = pos.coords.longitude;
-                                var acc = pos.coords.accuracy;
-
-                                setMapToCurrentLocation(map, lat, lng, acc);
-                            },
-                            (err) => {
-                                console.log('location error', err.message);
-                            },
-                            {
-                                enableHighAccuracy: true,
-                                // maximumAge: 60000,
-                                timeout: 30000
-                            }
-                        );
-                    }
-
-                    function setMapToCurrentLocation(myMap, lat, lng, acc) {
-                        var myLatLng = L.latLng(lat, lng);
-
-
-                        if (locationMarker || locationCircle) {
-                            map.removeLayer(locationMarker);
-                            map.removeLayer(locationCircle);
-                            map.flyTo(myLatLng, 16);
-                        }
-                        // add marker here
-                        locationMarker = L.marker(myLatLng)
-                        locationCircle = L.circle(myLatLng, {
-                            color: "red",
-                            fillColor: "#f66",
-                            fillOpacity: 0.5,
-                            radius: acc
-                        });
-
-                        locationMarker.addTo(map)
-                        locationCircle.addTo(map)
-                    }
-
-                    function loadGeoJSON(map) {
-                        $.getJSON("static/dccrdpandd.geojson", function (data){
-                            var euroIcon = L.icon({
-                                iconUrl: "static/euro.png",
-                                iconSize: [50, 40]
-                            });
-                            //add the GeoJSON layer to the map
-                            L.geoJSON(data, {
-                                pointToLayer: function (feature, latlng){
-                                    var marker = L.marker(latlng, {icon:euroIcon});
-                                    marker.bindPopup('Location: ' + feature.properties.Location + '<br/>' + 'Hours of Operation: ' + feature.properties.Hours_of_Operation );
-                                    return marker;
-                                }
-                            }).addTo(map);
-                        });
-                    }
-
-                    navigator.geolocation.watchPosition((map) => updateLocation(map), (err) => console.log('watch pos error', err));
-
-                }
-
-            </script>
-
-        </body>
+</body>
     {% else %}
-        Welcome to the Dublin Parking Meter Locator!
-        <a class="nav-link" href="{% url 'login'%}?next={{request.path}}">Log in</a>
-        <a class="nav-link" href="{% url 'signup'%}?next={{request.path}}">Sign up</a>
+        Welcome to the world of Web Mapping!
+            <a class="nav-link" href="{% url 'login'%}?next={{request.path}}">Log in</a>
+            <a class="nav-link" href="{% url 'signup'%}?next={{request.path}}">Sign up</a>
     {% endif %}
 {% endblock %}
-
-</html>
 
