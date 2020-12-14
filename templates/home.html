@@ -75,7 +75,7 @@
                 locationMarker = L.marker(myLatLng)
                 locationCircle = L.circle(myLatLng, {
                     color: "red",
-                    fillColor: "#f03",
+                    fillColor: "#f66",
                     fillOpacity: 0.5,
                     radius: acc
                 });
@@ -93,7 +93,9 @@
                     //add the GeoJSON layer to the map
                     L.geoJSON(data, {
                         pointToLayer: function (feature, latlng){
-                            return L.marker(latlng, {icon: euroIcon});
+                            var marker = L.marker(latlng, {icon:euroIcon});
+                            marker.bindPopup('Location: ' + feature.properties.Location + '<br/>' + 'Hours of Operation: ' + feature.properties.Hours_of_Operation );
+                            return marker;
                         }
                     }).addTo(map);
                 });
