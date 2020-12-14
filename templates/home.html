@@ -48,8 +48,7 @@
                         var lng = pos.coords.longitude;
                         var acc = pos.coords.accuracy;
 
-                        setMapToCurrentLocation(map, lat, lng, acc);
-                        update_db(lat, lng)
+                        setMapToCurrentLocation(map, lat, lng, acc)
                     },
                     (err) => {
                         console.log('location error', err.message);
