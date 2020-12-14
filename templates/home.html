@@ -3,10 +3,10 @@
 {% load i18n %}
 
 {% block title %}Home{% endblock %}
-
 {% block content %}
     {% if user.is_authenticated %}
         Hi {{ user.username }}!
+        Welcome to the Dublin Parking Meter locator.
         <a class="nav-link" href="{% url 'logout'%}?next={{request.path}}">Log out</a>
             {% load leaflet_tags %}
         {% leaflet_js %}
@@ -109,9 +109,9 @@
 
         </body>
     {% else %}
-        Welcome to the world of Web Mapping!
-            <a class="nav-link" href="{% url 'login'%}?next={{request.path}}">Log in</a>
-            <a class="nav-link" href="{% url 'signup'%}?next={{request.path}}">Sign up</a>
+        Welcome to the Dublin Parking Meter Locator!
+        <a class="nav-link" href="{% url 'login'%}?next={{request.path}}">Log in</a>
+        <a class="nav-link" href="{% url 'signup'%}?next={{request.path}}">Sign up</a>
     {% endif %}
 {% endblock %}
 
